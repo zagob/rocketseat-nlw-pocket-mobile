@@ -1,12 +1,19 @@
+import { useEffect, useState } from "react";
+import { Alert, View } from "react-native";
+import MapView from "react-native-maps";
+
+import { api } from "@/services/api";
+
 import { Categories, CategoriesProps } from "@/components/categories";
 import { PlaceProps } from "@/components/place";
 import { Places } from "@/components/places";
-import { api } from "@/services/api";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Alert, Text, View } from "react-native";
 
 type MarketsProps = PlaceProps;
+
+const currentLocation = {
+  latitude: -23.561187293883442,
+  longitude: -46.656451388116494,
+};
 
 export default function Home() {
   const [categories, setCategories] = useState<CategoriesProps>([]);
@@ -15,7 +22,7 @@ export default function Home() {
 
   async function fetchCategories() {
     try {
-      const { data } = await axios.get(`/categories`);
+      const { data } = await api.get(`/categories`);
       setCategories(data);
       setCategory(data[0].id);
     } catch (error) {
@@ -49,6 +56,15 @@ export default function Home() {
         data={categories}
         onSelect={setCategory}
         selected={category}
+      />
+      <MapView
+        style={{ flex: 1 }}
+        initialRegion={{
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
       />
       <Places data={markets} />
     </View>
